@@ -22,7 +22,8 @@ from .tables import (
     atom_contribution,
     mulliken,
     headers,
-    row_coeffs
+    row_coeffs,
+    column_coeffs
 )
 
 
@@ -40,7 +41,17 @@ def print_header(group):
     -------
     Prints character table header indicating order of symmetry operations.
     """
-    print(*headers[group.lower()])
+    symbols = headers[group.lower()]
+    numbers = column_coeffs[group.lower()]
+
+    header = []
+    for i in range(len(numbers)):
+        if numbers[i] != 1:
+            header.append(str(numbers[i]) + symbols[i])
+        else:
+            header.append(symbols[i])
+
+    print(*header)
 
 
 def print_point_groups():
@@ -99,8 +110,17 @@ def print_table(group):
 
     """
     group = group.lower()
-    columns = headers[group]
+    symbols = headers[group]
     mull_symbols = mulliken[group]
+    numbers = column_coeffs[group.lower()]
+
+    # generate list of symmetry symbols with coefficients
+    header = []
+    for i in range(len(numbers)):
+        if numbers[i] != 1:
+            header.append(str(numbers[i]) + symbols[i])
+        else:
+            header.append(symbols[i])
 
     # generate list of Mulliken symbols including duplicates if imaginary rep
     if group.lower() in row_coeffs.keys():
@@ -110,9 +130,12 @@ def print_table(group):
     else:
         rows = mull_symbols
 
-    table = [[group.capitalize(), *columns]]
-    for i_row in range(len(rows)):
-        table.append([rows[i_row], *tables[group][i_row]])
+    table = [[group.capitalize(), *header]]
+    if group == 'c1':
+        table.append([rows, 1])
+    else:
+        for i_row in range(len(rows)):
+            table.append([rows[i_row], *tables[group][i_row]])
 
     print(tabulate(table, tablefmt='rounded_grid'))
 
