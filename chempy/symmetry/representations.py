@@ -9,6 +9,7 @@ https://doi.org/10.1021/ed086p251.
 """
 
 import numpy as np
+from functools import wraps
 from tabulate import tabulate
 
 # data tables in character_tables.py file
@@ -208,6 +209,7 @@ class Reducible:
         Dictionary.
 
         """
+        @wraps(func)
         def wrapper(self, *args, **kwargs):
             if kwargs.get('to_dict'):
                 keys = mulliken[self.group.lower()]
@@ -245,12 +247,12 @@ class Reducible:
         --------
         >>> rep = Reducible([9, -1, 3, 1], 'c2v', all_motion=True)
         >>> rep.decomp()
-        >>> array([3, 1, 3, 2])
+        array([3, 1, 3, 2])
         >>> rep = Reducible([15, 0, 0, 7, -2, -2], 'C3h', all_motion=False)
         >>> rep.decomp()
-        >>> array([3, 4, 2, 1])
+        array([3, 4, 2, 1])
         >>> rep.decomp(to_dict=True)
-        >>> {"A'": 3, 'A"': 4, "E'": 2, 'E"': 1}
+        {"A'": 3, 'A"': 4, "E'": 2, 'E"': 1}
         """
         table = sympy_to_num(tables[self.group])
         gamma = np.array(self.gamma)
@@ -287,7 +289,7 @@ class Reducible:
         >>> rep.vibe_modes()
         array([2, 0, 1, 0])
         >>> rep.vibe_modes(to_dict)
-        >>> {'A1': 2, 'A2': 0, 'B1': 1, 'B2': 0}
+        {'A1': 2, 'A2': 0, 'B1': 1, 'B2': 0}
         """
         if self.all_motion is False:
             return self.decomp()
@@ -320,12 +322,12 @@ class Reducible:
         --------
         >>> rep = Reducible([9, -1, 3, 1], 'c2v', all_motion=True)
         >>> rep.ir_active()
-        >>> array([2, 0, 1, 0])
+        array([2, 0, 1, 0])
         >>> rep = Reducible([5, 2, 1, 3, 0, 3], 'd3h', all_motion=False)
         >>> rep.ir_active()
-        >>> array([0, 0, 1, 0, 1, 0])
+        array([0, 0, 1, 0, 1, 0])
         >>> rep.ir_active(to_dict=True)
-        >>>  {"A1'": 0, "A2'": 0, "E'": 1, 'A1"': 0, 'A2"': 1, 'E"': 0}
+        {"A1'": 0, "A2'": 0, "E'": 1, 'A1"': 0, 'A2"': 1, 'E"': 0}
 
         """
         return self.vibe_modes() * np.array(IR_active[self.group])
@@ -353,12 +355,12 @@ class Reducible:
         --------
         >>> rep = Reducible([9, -1, 3, 1], 'c2v', all_motion=True)
         >>> rep.raman_active([3, 1, 3, 2, 'C2v'])
-        >>> array([2, 0, 1, 0])
+        array([2, 0, 1, 0])
         >>> rep = Reducible([5, 2, 1, 3, 0, 3], 'd3h', all_motion=False)
         >>> rep.raman_active()
-        >>> array([2, 0, 1, 0, 0, 0])
+        array([2, 0, 1, 0, 0, 0])
         >>> rep.raman_active(to_dict=True)
-        >>>  {"A1'": 2, "A2'": 0, "E'": 1, 'A1"': 0, 'A2"': 0, 'E"': 0}
+        {"A1'": 2, "A2'": 0, "E'": 1, 'A1"': 0, 'A2"': 0, 'E"': 0}
 
         """
         return self.vibe_modes() * np.array(Raman_active[self.group])
