@@ -338,10 +338,7 @@ def calc_salcs_func(ligands, group, symbols, mode='vector', to_dict=False):
     [a + b + c + d, 0, a - b + c - d, 0, 0, 0, 0, 0, 0, [a - c, b - d]]
     >>> coords = [[0, -90], [120, -90], [240, -90]]
     >>> calc_salcs_func(coords, 'd3h', [a, b, c], mode='angle')
-    [1.0*a + 1.0*b + 1.0*c, 0,
-     [1.0*a - 0.5*b - 0.5*c,
-      1.0*b - 1.0*c, 1.0*a - 0.5*b - 0.5*c,
-      1.0*b - 1.0*c], 0, 0, 0]
+    [1.0*a + 1.0*b + 1.0*c, 0, [1.0*a - 0.5*b - 0.5*c, 1.0*b - 1.0*c, 1.0*a - 0.5*b - 0.5*c, 1.0*b - 1.0*c], 0, 0, 0]
 
     References
     ----------
