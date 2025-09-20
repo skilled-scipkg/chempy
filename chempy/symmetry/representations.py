@@ -311,7 +311,7 @@ class Reducible:
         >>> rep = Reducible([9, -1, 3, 1], 'c2v', all_motion=True)
         >>> rep.vibe_modes()
         array([2, 0, 1, 0])
-        >>> rep.vibe_modes(to_dict)
+        >>> rep.vibe_modes(to_dict=True)
         {'A1': 2, 'A2': 0, 'B1': 1, 'B2': 0}
         """
         if self.all_motion is False:

@@ -116,7 +116,7 @@ def calc_salcs_projection(projection, group, to_dict=False):
     >>> import sympy
     >>> a, b, c = sympy.symbols('a b c')
     >>> calc_salcs_projection([a, b, c, a, b, c], 'c3v')
-    [[2*a + 2*b + 2*c, 0, 2*a - b - c]
+    [2*a + 2*b + 2*c, 0, 2*a - b - c]
     >>> calc_salcs_projection([a, b, c, a, b, c], 'c3v', to_dict=True)
     {'A1': 2*a + 2*b + 2*c, 'A2': 0, 'E': 2*a - b - c}
 
@@ -333,11 +333,11 @@ def calc_salcs_func(ligands, group, symbols, mode='vector', to_dict=False):
     --------
     >>> import sympy
     >>> a, b, c, d = sympy.symbols('a b c d')
-    >>> calc_salcs_func([[1, 0, 0], [0, 1, 0], [-1, 0, 0], [0, -1, 0]],
-                            'd4h', [a, b, c, d], mode='vector')
+    >>> coords = [[1, 0, 0], [0, 1, 0], [-1, 0, 0], [0, -1, 0]]
+    >>> calc_salcs_func(coords, 'd4h', [a, b, c, d], mode='vector')
     [a + b + c + d, 0, a - b + c - d, 0, 0, 0, 0, 0, 0, [a - c, b - d]]
-    >>> calc_salcs_func([[0, -90], [120, -90], [240, -90]], 'd3h', [a, b, c],
-                        mode='angle')
+    >>> coords = [[0, -90], [120, -90], [240, -90]]
+    >>> calc_salcs_func(coords, 'd3h', [a, b, c], mode='angle')
     [1.0*a + 1.0*b + 1.0*c, 0,
      [1.0*a - 0.5*b - 0.5*c,
       1.0*b - 1.0*c, 1.0*a - 0.5*b - 0.5*c,
