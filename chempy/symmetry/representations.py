@@ -275,7 +275,7 @@ class Reducible:
         >>> rep.decomp()
         array([3, 4, 2, 1])
         >>> rep.decomp(to_dict=True)
-        {"A'": 3, 'A"': 4, "E'": 2, 'E"': 1}
+        {"A'": 3, "E'": 4, 'A"': 2, 'E"': 1}
         """
         table = sympy_to_num(tables[self.group])
         gamma = np.array(self.gamma)
@@ -350,7 +350,7 @@ class Reducible:
         >>> rep.ir_active()
         array([0, 0, 1, 0, 1, 0])
         >>> rep.ir_active(to_dict=True)
-        {"A1'": 0, "A2'": 0, "E'": 1, 'A1"': 0, 'A2"': 1, 'E"': 0}
+        {"A'1": 0, "A'2": 0, "E'": 1, 'A"1': 0, 'A"2': 1, 'E"': 0}
 
         """
         return self.vibe_modes() * np.array(IR_active[self.group])
@@ -383,7 +383,7 @@ class Reducible:
         >>> rep.raman_active()
         array([2, 0, 1, 0, 0, 0])
         >>> rep.raman_active(to_dict=True)
-        {"A1'": 2, "A2'": 0, "E'": 1, 'A1"': 0, 'A2"': 0, 'E"': 0}
+        {"A'1": 2, "A'2": 0, "E'": 1, 'A"1': 0, 'A"2': 0, 'E"': 0}
 
         """
         return self.vibe_modes() * np.array(Raman_active[self.group])

@@ -30,3 +30,6 @@ sundials-*.tar.gz
 tmp/
 .coverage
 htmlcov/
+.DS_Store
+*.ini
+*.ini.bak
