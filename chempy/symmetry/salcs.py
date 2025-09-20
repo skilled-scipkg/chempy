@@ -40,7 +40,6 @@ def return_dict(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         if kwargs.get('to_dict'):
-            print(args)
             keys = mulliken[args[1].lower()]
             values = func(*args, **kwargs)
             return dict(zip(keys, values))
@@ -314,11 +313,11 @@ def calc_salcs_func(ligands, group, symbols, mode='vector', to_dict=False):
     ligand : list or nested list
         Nested list of ligand positions as xyz coordinates (mode='vector')
         or angles (mode='angle').
-    symbols : SymPy symbols
-        SymPy symbols representing outer ligands or atoms.
     group : str
         Point group Schoenflies notation (e.g., 'C2v').  This is
         case-insensitive.
+    symbols : SymPy symbols
+        SymPy symbols representing outer ligands or atoms.
     mode : 'vector' or 'angle'
         Whether the position of ligands or outer atoms are provided in xyz
         coordinates ('vector') or [theta, phi] angles ('angle').
