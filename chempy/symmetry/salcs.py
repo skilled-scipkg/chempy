@@ -83,6 +83,35 @@ def _expand_irreducible(irred, group):
     return expanded_irred
 
 
+def _normalize_salcs_expr(salcs):
+    """
+    Normalize SALC composed of sympy expresions.
+
+    Normalizes SALC by dividing each SALC through by the largest value in
+    that SALC.
+
+    Parameters
+    ----------
+    salcs : List or nested list of sympy expressions.
+        Nested list of SALCs.
+
+    Returns
+    -------
+    np.array
+
+    """
+    normalized_values = []
+    for salc in salcs:
+        if isinstance(salc, list):
+            normalized_values.append(_normalize_salcs_expr(salc))
+        elif salc == 0:
+            normalized_values.append(salc)
+        else:
+            normalized_values.append(salc.as_poly().monic().as_expr())
+
+    return normalized_values
+
+
 @return_dict
 def calc_salcs_projection(projection, group, to_dict=False):
     """
@@ -116,9 +145,9 @@ def calc_salcs_projection(projection, group, to_dict=False):
     >>> import sympy
     >>> a, b, c = sympy.symbols('a b c')
     >>> calc_salcs_projection([a, b, c, a, b, c], 'c3v')
-    [2*a + 2*b + 2*c, 0, 2*a - b - c]
+    [a + b + c, 0, a - b/2 - c/2]
     >>> calc_salcs_projection([a, b, c, a, b, c], 'c3v', to_dict=True)
-    {'A1': 2*a + 2*b + 2*c, 'A2': 0, 'E': 2*a - b - c}
+    {'A1': a + b + c, 'A2': 0, 'E': a - b/2 - c/2}
 
     """
     salcs = []
@@ -128,7 +157,7 @@ def calc_salcs_projection(projection, group, to_dict=False):
                            np.array(projection))
         salcs.append(np.sum(product))
 
-    return salcs
+    return _normalize_salcs_expr(salcs)
 
 
 # USING SYMMETRY FUNCTIONS
