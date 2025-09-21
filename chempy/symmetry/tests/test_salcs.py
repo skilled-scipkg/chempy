@@ -55,8 +55,8 @@ def test_calc_salcs_func():
     # square planar
     a, b, c, d = sympy.symbols('a b c d')
     salc_true1 = [1.0*a + 1.0*b + 1.0*c + 1.0*d, 0,
-                   1.0*a - 1.0*b + 1.0*c - 1.0*d, 0, 0, 0, 0, 0, 0,
-                   [1.0*a - 1.0*c, 1.0*b - 1.0*d]]
+                  1.0*a - 1.0*b + 1.0*c - 1.0*d, 0, 0, 0, 0, 0, 0,
+                  [1.0*a - 1.0*c, 1.0*b - 1.0*d]]
     assert (calc_salcs_func([[1, 0, 0], [0, 1, 0], [-1, 0, 0], [0, -1, 0]],
                             'd4h', [a, b, c, d], mode='vector') == salc_true1)
 
