@@ -85,7 +85,7 @@ def _expand_irreducible(irred, group):
 
 def _normalize_salcs_expr(salcs):
     """
-    Normalize SALC composed of sympy expresions.
+    Normalize SALC composed of sympy expressions.
 
     Normalizes SALC by dividing each SALC through by the largest value in
     that SALC.
