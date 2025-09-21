@@ -246,7 +246,10 @@ def _normalize_salcs(salcs):
         elif value == 0:
             normalized_values.append(value)
         else:
-            normalized_values.append(round(value / max(salcs, key=abs), 2))
+            coeff = round(value / max(salcs, key=abs), 2)
+            if coeff % 1 < 0.01:
+                coeff = sympy.Integer(coeff)
+            normalized_values.append(coeff)
 
     return normalized_values
 
@@ -335,12 +338,11 @@ def calc_salcs_func(ligands, group, symbols, mode='vector', to_dict=False):
     >>> a, b, c, d = sympy.symbols('a b c d')
     >>> coords = [[1, 0, 0], [0, 1, 0], [-1, 0, 0], [0, -1, 0]]
     >>> calc_salcs_func(coords, 'd4h', [a, b, c, d], mode='vector')
-    [1.0*a + 1.0*b + 1.0*c + 1.0*d, 0, 1.0*a - 1.0*b + 1.0*c - 1.0*d, \
-0, 0, 0, 0, 0, 0, [1.0*a - 1.0*c, 1.0*b - 1.0*d]]
+    [a + b + c + d, 0, a - b + c - d, 0, 0, 0, 0, 0, 0, [a - c, b - d]]
     >>> coords = [[0, -90], [120, -90], [240, -90]]
     >>> calc_salcs_func(coords, 'd3h', [a, b, c], mode='angle')
-    [1.0*a + 1.0*b + 1.0*c, 0, [1.0*a - 0.5*b - 0.5*c, 1.0*b - 1.0*c, \
-1.0*a - 0.5*b - 0.5*c, 1.0*b - 1.0*c], 0, 0, 0]
+    [a + b + c, 0, [a - 0.5*b - 0.5*c, b - c, a - 0.5*b - 0.5*c, b - c], \
+0, 0, 0]
 
     References
     ----------
