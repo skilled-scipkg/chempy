@@ -1,3 +1,7 @@
+v0.10.1 (2025-09-22)
+====================
+- Fixes to chempy.symmetry
+
 v0.10.0 (2025-09-05)
 ====================
 - New module: chempy.symmetry (point groups)
