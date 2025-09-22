@@ -9,6 +9,7 @@ https://doi.org/10.1021/ed086p251.
 """
 
 import numpy as np
+from functools import wraps
 from tabulate import tabulate
 
 # data tables in character_tables.py file
@@ -21,7 +22,8 @@ from .tables import (
     atom_contribution,
     mulliken,
     headers,
-    row_coeffs
+    row_coeffs,
+    column_coeffs
 )
 
 
@@ -39,7 +41,17 @@ def print_header(group):
     -------
     Prints character table header indicating order of symmetry operations.
     """
-    print(*headers[group.lower()])
+    symbols = headers[group.lower()]
+    numbers = column_coeffs[group.lower()]
+
+    header = []
+    for i in range(len(numbers)):
+        if numbers[i] != 1:
+            header.append(str(numbers[i]) + symbols[i])
+        else:
+            header.append(symbols[i])
+
+    print(*header)
 
 
 def print_point_groups():
@@ -98,8 +110,17 @@ def print_table(group):
 
     """
     group = group.lower()
-    columns = headers[group]
+    symbols = headers[group]
     mull_symbols = mulliken[group]
+    numbers = column_coeffs[group.lower()]
+
+    # generate list of symmetry symbols with coefficients
+    header = []
+    for i in range(len(numbers)):
+        if numbers[i] != 1:
+            header.append(str(numbers[i]) + symbols[i])
+        else:
+            header.append(symbols[i])
 
     # generate list of Mulliken symbols including duplicates if imaginary rep
     if group.lower() in row_coeffs.keys():
@@ -109,9 +130,12 @@ def print_table(group):
     else:
         rows = mull_symbols
 
-    table = [[group.capitalize(), *columns]]
-    for i_row in range(len(rows)):
-        table.append([rows[i_row], *tables[group][i_row]])
+    table = [[group.capitalize(), *header]]
+    if group == 'c1':
+        table.append([rows, 1])
+    else:
+        for i_row in range(len(rows)):
+            table.append([rows[i_row], *tables[group][i_row]])
 
     print(tabulate(table, tablefmt='rounded_grid'))
 
@@ -208,6 +232,7 @@ class Reducible:
         Dictionary.
 
         """
+        @wraps(func)
         def wrapper(self, *args, **kwargs):
             if kwargs.get('to_dict'):
                 keys = mulliken[self.group.lower()]
@@ -245,12 +270,12 @@ class Reducible:
         --------
         >>> rep = Reducible([9, -1, 3, 1], 'c2v', all_motion=True)
         >>> rep.decomp()
-        >>> array([3, 1, 3, 2])
+        array([3, 1, 3, 2])
         >>> rep = Reducible([15, 0, 0, 7, -2, -2], 'C3h', all_motion=False)
         >>> rep.decomp()
-        >>> array([3, 4, 2, 1])
+        array([3, 4, 2, 1])
         >>> rep.decomp(to_dict=True)
-        >>> {"A'": 3, 'A"': 4, "E'": 2, 'E"': 1}
+        {"A'": 3, "E'": 4, 'A"': 2, 'E"': 1}
         """
         table = sympy_to_num(tables[self.group])
         gamma = np.array(self.gamma)
@@ -286,8 +311,8 @@ class Reducible:
         >>> rep = Reducible([9, -1, 3, 1], 'c2v', all_motion=True)
         >>> rep.vibe_modes()
         array([2, 0, 1, 0])
-        >>> rep.vibe_modes(to_dict)
-        >>> {'A1': 2, 'A2': 0, 'B1': 1, 'B2': 0}
+        >>> rep.vibe_modes(to_dict=True)
+        {'A1': 2, 'A2': 0, 'B1': 1, 'B2': 0}
         """
         if self.all_motion is False:
             return self.decomp()
@@ -320,12 +345,12 @@ class Reducible:
         --------
         >>> rep = Reducible([9, -1, 3, 1], 'c2v', all_motion=True)
         >>> rep.ir_active()
-        >>> array([2, 0, 1, 0])
+        array([2, 0, 1, 0])
         >>> rep = Reducible([5, 2, 1, 3, 0, 3], 'd3h', all_motion=False)
         >>> rep.ir_active()
-        >>> array([0, 0, 1, 0, 1, 0])
+        array([0, 0, 1, 0, 1, 0])
         >>> rep.ir_active(to_dict=True)
-        >>>  {"A1'": 0, "A2'": 0, "E'": 1, 'A1"': 0, 'A2"': 1, 'E"': 0}
+        {"A'1": 0, "A'2": 0, "E'": 1, 'A"1': 0, 'A"2': 1, 'E"': 0}
 
         """
         return self.vibe_modes() * np.array(IR_active[self.group])
@@ -353,12 +378,12 @@ class Reducible:
         --------
         >>> rep = Reducible([9, -1, 3, 1], 'c2v', all_motion=True)
         >>> rep.raman_active([3, 1, 3, 2, 'C2v'])
-        >>> array([2, 0, 1, 0])
+        array([2, 0, 1, 0])
         >>> rep = Reducible([5, 2, 1, 3, 0, 3], 'd3h', all_motion=False)
         >>> rep.raman_active()
-        >>> array([2, 0, 1, 0, 0, 0])
+        array([2, 0, 1, 0, 0, 0])
         >>> rep.raman_active(to_dict=True)
-        >>>  {"A1'": 2, "A2'": 0, "E'": 1, 'A1"': 0, 'A2"': 0, 'E"': 0}
+        {"A'1": 2, "A'2": 0, "E'": 1, 'A"1': 0, 'A"2': 0, 'E"': 0}
 
         """
         return self.vibe_modes() * np.array(Raman_active[self.group])

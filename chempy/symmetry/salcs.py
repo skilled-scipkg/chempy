@@ -15,6 +15,7 @@ operator method or using the symmetry functions in the character tables.
 
 from math import cos, sin, radians, isclose
 import numpy as np
+from functools import wraps
 import sympy
 sympy.init_printing(pretty_print=False)
 
@@ -36,9 +37,9 @@ def return_dict(func):
     Dictionary.
 
     """
+    @wraps(func)
     def wrapper(*args, **kwargs):
         if kwargs.get('to_dict'):
-            print(args)
             keys = mulliken[args[1].lower()]
             values = func(*args, **kwargs)
             return dict(zip(keys, values))
@@ -82,6 +83,35 @@ def _expand_irreducible(irred, group):
     return expanded_irred
 
 
+def _normalize_salcs_expr(salcs):
+    """
+    Normalize SALC composed of sympy expressions.
+
+    Normalizes SALC by dividing each SALC through by the largest value in
+    that SALC.
+
+    Parameters
+    ----------
+    salcs : List or nested list of sympy expressions.
+        Nested list of SALCs.
+
+    Returns
+    -------
+    np.array
+
+    """
+    normalized_values = []
+    for salc in salcs:
+        if isinstance(salc, list):
+            normalized_values.append(_normalize_salcs_expr(salc))
+        elif salc == 0:
+            normalized_values.append(salc)
+        else:
+            normalized_values.append(salc.as_poly().monic().as_expr())
+
+    return normalized_values
+
+
 @return_dict
 def calc_salcs_projection(projection, group, to_dict=False):
     """
@@ -115,9 +145,9 @@ def calc_salcs_projection(projection, group, to_dict=False):
     >>> import sympy
     >>> a, b, c = sympy.symbols('a b c')
     >>> calc_salcs_projection([a, b, c, a, b, c], 'c3v')
-    >>> [2*a + 2*b + 2*c, , 0, 2*a - b - c]
+    [a + b + c, 0, a - b/2 - c/2]
     >>> calc_salcs_projection([a, b, c, a, b, c], 'c3v', to_dict=True)
-    >>> {'A1': 2*a + 2*b + 2*c, 'A2': 0, 'E': 2*a - b - c}
+    {'A1': a + b + c, 'A2': 0, 'E': a - b/2 - c/2}
 
     """
     salcs = []
@@ -127,7 +157,7 @@ def calc_salcs_projection(projection, group, to_dict=False):
                            np.array(projection))
         salcs.append(np.sum(product))
 
-    return salcs
+    return _normalize_salcs_expr(salcs)
 
 
 # USING SYMMETRY FUNCTIONS
@@ -242,10 +272,13 @@ def _normalize_salcs(salcs):
     for value in salcs:
         if isinstance(value, list):
             normalized_values.append(_normalize_salcs(value))
-        elif isinstance(value, int):
+        elif value == 0:
             normalized_values.append(value)
         else:
-            normalized_values.append(round(value / max(salcs, key=abs), 2))
+            coeff = round(value / max(salcs, key=abs), 2)
+            if coeff % 1 < 0.01:
+                coeff = sympy.Integer(coeff)
+            normalized_values.append(coeff)
 
     return normalized_values
 
@@ -312,11 +345,11 @@ def calc_salcs_func(ligands, group, symbols, mode='vector', to_dict=False):
     ligand : list or nested list
         Nested list of ligand positions as xyz coordinates (mode='vector')
         or angles (mode='angle').
-    symbols : SymPy symbols
-        SymPy symbols representing outer ligands or atoms.
     group : str
         Point group Schoenflies notation (e.g., 'C2v').  This is
         case-insensitive.
+    symbols : SymPy symbols
+        SymPy symbols representing outer ligands or atoms.
     mode : 'vector' or 'angle'
         Whether the position of ligands or outer atoms are provided in xyz
         coordinates ('vector') or [theta, phi] angles ('angle').
@@ -332,17 +365,13 @@ def calc_salcs_func(ligands, group, symbols, mode='vector', to_dict=False):
     --------
     >>> import sympy
     >>> a, b, c, d = sympy.symbols('a b c d')
-    # for a square planar complex
-    >>> calc_salcs_func([[1, 0, 0], [0, 1, 0], [-1, 0, 0], [0, -1, 0]],
-                            'd4h', [a, b, c, d], mode='vector')
-    >>> [a + b + c + d, 0, a - b + c - d, 0, 0, 0, 0, 0, 0, [a - c, b - d]]
-    # for a trigonal planar complex
-    >>> calc_salcs_func([[0, -90], [120, -90], [240, -90]], 'd3h', [a, b, c],
-                        mode='angle')
-    >>> [1.0*a + 1.0*b + 1.0*c, 0,
-         [1.0*a - 0.5*b - 0.5*c,
-          1.0*b - 1.0*c, 1.0*a - 0.5*b - 0.5*c,
-          1.0*b - 1.0*c], 0, 0, 0]
+    >>> coords = [[1, 0, 0], [0, 1, 0], [-1, 0, 0], [0, -1, 0]]
+    >>> calc_salcs_func(coords, 'd4h', [a, b, c, d], mode='vector')
+    [a + b + c + d, 0, a - b + c - d, 0, 0, 0, 0, 0, 0, [a - c, b - d]]
+    >>> coords = [[0, -90], [120, -90], [240, -90]]
+    >>> calc_salcs_func(coords, 'd3h', [a, b, c], mode='angle')
+    [a + b + c, 0, [a - 0.5*b - 0.5*c, b - c, a - 0.5*b - 0.5*c, b - c], \
+0, 0, 0]
 
     References
     ----------
