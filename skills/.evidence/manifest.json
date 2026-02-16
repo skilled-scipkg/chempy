@@ -1,0 +1,13 @@
+{
+  "core_skills": [
+    "chempy-examples-and-tutorials",
+    "chempy-inputs-and-modeling",
+    "chempy-advanced-topics"
+  ],
+  "evidence_dir": "skills/.evidence",
+  "files": [
+    "skills/.evidence/chempy-examples-and-tutorials.md",
+    "skills/.evidence/chempy-inputs-and-modeling.md",
+    "skills/.evidence/chempy-advanced-topics.md"
+  ]
+}

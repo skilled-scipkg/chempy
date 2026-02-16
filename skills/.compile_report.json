@@ -1,0 +1,90 @@
+{
+  "compiled_package_id": "chempy",
+  "evidence": {
+    "core_skills": [
+      "chempy-examples-and-tutorials",
+      "chempy-inputs-and-modeling",
+      "chempy-kinetics",
+      "chempy-joss-paper"
+    ],
+    "evidence_dir": "skills/.evidence",
+    "files": [
+      "skills/.evidence/chempy-examples-and-tutorials.md",
+      "skills/.evidence/chempy-inputs-and-modeling.md",
+      "skills/.evidence/chempy-kinetics.md",
+      "skills/.evidence/chempy-joss-paper.md"
+    ]
+  },
+  "generation": {
+    "docs_only": false,
+    "generator_script": "sci-skills-generator/scripts/generate_skills_folder.py",
+    "max_skills": 30,
+    "return_code": 0,
+    "status": "ok"
+  },
+  "passes": [
+    {
+      "pass": 1,
+      "return_code": 0,
+      "status": "ok"
+    },
+    {
+      "pass": 2,
+      "return_code": 0,
+      "status": "ok"
+    },
+    {
+      "pass": 3,
+      "return_code": 0,
+      "status": "ok"
+    }
+  ],
+  "profile": {
+    "docs_dirs": [
+      "joss-paper"
+    ],
+    "docs_only": false,
+    "notes": [
+      "Top-level docs files exist at repo root (README.rst, CHANGES.rst, CONTRIBUTING.rst) but there is no dedicated docs/ directory.",
+      "Generator setup patch applied: fixed invalid f-string newline joins and added .ipynb to DOC_EXTENSIONS for notebook tutorial indexing."
+    ],
+    "package_name": "chempy",
+    "profile_path": "skills/.compile_profile.json",
+    "profile_source": "file",
+    "source_dirs": [
+      "chempy"
+    ],
+    "test_dirs": [
+      "chempy/tests",
+      "chempy/electrochemistry/tests",
+      "chempy/kinetics/tests",
+      "chempy/printing/tests",
+      "chempy/properties/tests",
+      "chempy/symmetry/tests",
+      "chempy/thermodynamics/tests",
+      "chempy/util/tests"
+    ],
+    "tutorial_dirs": [
+      "examples"
+    ],
+    "warnings": []
+  },
+  "project_root": "/mnt/home/taoeli/fermilink_repos/.fermilink-auto-compile/chempy-chempy",
+  "validation": {
+    "core_skills_checked": [
+      "chempy-examples-and-tutorials",
+      "chempy-inputs-and-modeling",
+      "chempy-advanced-topics"
+    ],
+    "docs_only": false,
+    "errors": [],
+    "index_skills": [
+      "chempy-index"
+    ],
+    "ok": true,
+    "skills_total": 4,
+    "source_links_total": 24,
+    "topic_skills": 3,
+    "warnings": []
+  }
+}
